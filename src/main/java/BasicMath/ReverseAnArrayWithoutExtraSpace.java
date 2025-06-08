@@ -14,7 +14,7 @@ public class ReverseAnArrayWithoutExtraSpace {
             a[start] = a[end];
             a[end] = temp;
             start++;end--;
-        }c
+        }
         printArray(a);
     }
     static void printArray(int [] a){
