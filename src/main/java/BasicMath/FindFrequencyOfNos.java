@@ -18,7 +18,7 @@ public class FindFrequencyOfNos {
                 maxKey=v.getKey();
             }
             else if(v.getValue()==max) {
-                maxKey = maxKey < v.getKey() ? maxKey : v.getKey();
+                maxKey =Math.min(v.getKey(),maxKey);
             }
         }
         return maxKey;
