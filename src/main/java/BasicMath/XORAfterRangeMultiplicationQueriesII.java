@@ -1,75 +1,85 @@
-package BasicMath;
+    package BasicMath;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
-public class VowelSpellchecker {
-    public static void main(String[] args) {
-        String[] wordlist={"KiTe","kite","hare","Hare"};
-        String[] queries={"kite","Kite","KiTe","Hare","HARE","Hear","hear","keti","keet","keto"};
-        printArray(spellchecker(wordlist,queries));
-    }
+public class XORAfterRangeMultiplicationQueriesII {
 
-        public static String[] spellchecker(String[] wordlist, String[] queries) {
-            Set<String> set=new HashSet<>(Arrays.asList(wordlist));
-            int queryLength=queries.length;
-            String res[]=new String[queryLength];
-            int index=0;
-            for(String q: queries){
-                if(set.contains(q)){
-                    res[index++]=q;
-                    continue;
-                }
+        private static final int MOD = 1_000_000_007;
 
-                String caseMatch=null;
-                for(String w: wordlist){
-                    if(w.equalsIgnoreCase(q)){
-                        caseMatch=w;
-                        break;
-                    }
-                }
-                if(caseMatch!=null){
-                    res[index++]=caseMatch;
-                    continue;
-                }
-
-                String vowelMatch=null;
-                for(String w: wordlist){
-                    if(w.length()!=q.length()){
-                        continue;
-                    }
-                    boolean match=true;
-                    for(int i=0;i<w.length();i++){
-                        char qc=Character.toLowerCase(q.charAt(i));
-                        char wc=Character.toLowerCase(w.charAt(i));
-                        if(qc!=wc){
-                            if(!(isVowel(qc) && isVowel(wc))){
-                                match=false;
-                                break;
-                            }
-                        }
-                    }
-                    if(match){
-                        vowelMatch=w;
-                        break;
-                    }
-                }
-                if(vowelMatch!=null){
-                    res[index++]=vowelMatch;
-                }
-                else{
-                    res[index++]="";
-                }
+        private long power(long base, long exp) {
+            long res = 1;
+            base %= MOD;
+            while (exp > 0) {
+                if ((exp & 1) == 1) res = (res * base) % MOD;
+                base = (base * base) % MOD;
+                exp >>= 1;
             }
             return res;
         }
-        public static boolean isVowel(char c){
-            return "aeiou".indexOf(c)>=0;
+
+        private long modInv(long n) {
+            return power(n, MOD - 2);
         }
-        public static void printArray(String[] res){
-            System.out.print("{");
-            for(String s:res){
-                System.out.print(s+" , ");
+
+        public int xorAfterQueries(int[] nums, int[][] queries) {
+            int n = nums.length;
+            int limit = (int) Math.sqrt(n);
+
+            // Group queries with small k for later processing
+            Map<Integer, List<int[]>> lightK = new HashMap<>();
+
+            for (int[] q : queries) {
+                int l = q[0], r = q[1], k = q[2], v = q[3];
+
+                if (k >= limit) {
+                    // Large k: apply brute force
+                    for (int i = l; i <= r; i += k) {
+                        nums[i] = (int) ((1L * nums[i] * v) % MOD);
+                    }
+                } else {
+                    // Small k: process later
+                    lightK.computeIfAbsent(k, x -> new ArrayList<>()).add(q);
+                }
             }
-            System.out.print("}");
+
+            for (Map.Entry<Integer, List<int[]>> entry : lightK.entrySet()) {
+                int k = entry.getKey();
+                List<int[]> queryList = entry.getValue();
+
+                // Process small queries grouped by step size k
+                long[] diff = new long[n];
+                Arrays.fill(diff, 1L);
+
+                for (int[] q : queryList) {
+                    int l = q[0], r = q[1], v = q[3];
+
+                    // Multiply starting position
+                    diff[l] = (diff[l] * v) % MOD;
+
+                    // Cancel the multiplication using modular inverse
+                    int steps = (r - l) / k;
+                    int next = l + (steps + 1) * k;
+                    if (next < n) {
+                        diff[next] = (diff[next] * modInv(v)) % MOD;
+                    }
+                }
+
+                // Propagate the multipliers with a step size of k
+                for (int i = 0; i < n; i++) {
+                    if (i >= k) {
+                        diff[i] = (diff[i] * diff[i - k]) % MOD;
+                    }
+                    nums[i] = (int) ((1L * nums[i] * diff[i]) % MOD);
+                }
+            }
+
+            int ans = 0;
+            for (int num : nums) {
+                ans ^= num;
+            }
+
+            return ans;
         }
-}
+    }
