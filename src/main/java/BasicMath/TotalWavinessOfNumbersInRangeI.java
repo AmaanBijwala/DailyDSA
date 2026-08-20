@@ -1,20 +1,30 @@
 package BasicMath;
 
-import java.util.Arrays;
+public class TotalWavinessOfNumbersInRangeI {
 
-public class DivideAnArrayIntoSubarraysWithMinimumCostI {
-        public int minimumCost(int[] nums) {
-            int min=Integer.MAX_VALUE;
-            int sMin=Integer.MAX_VALUE;
-            for(int i=1;i<nums.length;i++){
-                if(nums[i]<min){
-                    sMin=min;
-                    min=nums[i];
-                }
-                else if(nums[i]<sMin)
-                    sMin=nums[i];
+
+        public int totalWaviness(int num1, int num2) {
+            int total = 0;
+            for (int i = num1; i <= num2; i++) {
+                total += getWaviness(i);
             }
-            System.out.println("min "+min+"sMin "+sMin);
-            return nums[0]+min+sMin;
+            return total;
+        }
+
+        private int getWaviness(int x) {
+            String s = Integer.toString(x);
+            int waviness = 0;
+
+            for (int i = 1; i < s.length() - 1; i++) {
+                boolean isPeak =
+                        s.charAt(i) > s.charAt(i - 1) && s.charAt(i) > s.charAt(i + 1);
+                boolean isValley =
+                        s.charAt(i) < s.charAt(i - 1) && s.charAt(i) < s.charAt(i + 1);
+                if (isPeak || isValley) {
+                    waviness++;
+                }
+            }
+
+            return waviness;
         }
     }
