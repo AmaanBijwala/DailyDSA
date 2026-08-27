@@ -1,39 +1,23 @@
 package BasicMath;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
-public class ConstructTheMinimumBitwiseArrayI {
+public class SumOfGCDOfFormedPairs {
 
-    public int[] minBitwiseArray(List<Integer> nums) {
-        int n = nums.size();
-        int[] ans = new int[n];
+        private int gcd(int a, int b) { return b == 0 ? a : gcd(b, a % b); }
 
-        // Iterate through each prime number in the input list
-        for (int i = 0; i < n; i++) {
-            int target = nums.get(i);
-            boolean found = false;
-
-            /**
-             * Brute Force Search:
-             * We are looking for the smallest 'x' such that (x | (x + 1)) == target.
-             * Since we need the MINIMUM x, we start counting from 0 upwards.
-             */
-            for (int x = 0; x <= target; x++) {
-                // The bitwise OR of x and x+1 changes the rightmost 0 in x to a 1.
-                if ((x | (x + 1)) == target) {
-                    ans[i] = x;
-                    found = true;
-                    // Since we found the smallest x, we exit the inner loop immediately.
-                    break;
-                }
+        public long gcdSum(int[] A) {
+            int max = 0;
+            for (int i = 0; i < A.length; i++) {
+                max = Math.max(max, A[i]);
+                A[i] = gcd(A[i], max);
             }
 
-            // If no such x was found after checking all values up to target
-            if (!found) {
-                ans[i] = -1;
-            }
+            Arrays.sort(A);
+
+            long res = 0;
+            for (int i = 0, j = A.length - 1; i < j; i++, j--)
+                res += gcd(A[i], A[j]);
+
+            return res;
         }
-
-        return ans;
     }
-}
