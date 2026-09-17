@@ -1,25 +1,24 @@
 package BasicMath;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
 
-public class CountOperationsToObtainZero {
-    public static void main(String[] args) {
-        int num1 = 2;
-        int num2 = 2;
-        System.out.println(countOperations(num1,num2));
-    }
-    public static int countOperations(int num1, int num2) {
-        int count=0;
-        while(num1!=0 && num2!=0){
-            if(num1>=num2)
-                num1-=num2;
-            else
-                num2-=num1;
-            count++;
+public class Unique3DigitEvenNumbers {
+
+        public int totalNumbers(int[] digits) {
+            int[] f = new int[10];
+            int res = 0;
+
+            for (int d : digits) f[d]++;
+
+            for (int i = 1; i < 10; i++)
+                for (int j = 0; j < 10; j++)
+                    for (int k = 0; k < 9; k += 2) {
+                        f[i]--; f[j]--; f[k]--;
+
+                        if (f[i] >= 0 && f[j] >= 0 && f[k] >= 0) res++;
+
+                        f[i]++; f[j]++; f[k]++;
+                    }
+
+
+            return res;
         }
-        return count;
     }
-
-}
