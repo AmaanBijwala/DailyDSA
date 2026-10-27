@@ -35,4 +35,4 @@ class RotatedDigits {
 
             return count;
         }
-    }c
+    }
